@@ -2,9 +2,9 @@ const { AppError } = require('./errorHandlingMiddleware');
 
 const validate = (schema)=>{
     return (req , res , next)=>{
-        let {validationErrors} = schema.validate(req.body);
-        if(validationErrors){
-           return next( new AppError(400 , validationErrors.details[0].message) )
+        let {error} = schema.validate(req.body , {abortEarly : false});
+        if(error){
+           throw new AppError(400 , error.details.map(detail=>detail.message).join(', ')) 
         }
         next()
     }

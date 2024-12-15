@@ -1,12 +1,12 @@
 const app = require('./app')
 const {mongodbConnect} = require('./config/dbConfig')
 
-mongodbConnect();
+mongodbConnect(); // connect to mongoDB server
 
-app.listen(process.env.PORT , (err)=>{
+// run the server
+app.listen(process.env.PORT || 5000 , (err)=>{
     if(err){
         console.log("Problem Running the Server" , err);
-        return
     }
-    console.log (`Server is Running on port: ${process.env.PORT}`)
+    console.log (`Server is Running on port: ${process.env.PORT || 5000}`)
 })

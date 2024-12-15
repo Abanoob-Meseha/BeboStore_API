@@ -9,6 +9,7 @@ productsRouter.get('/'  ,(req , res)=>{
 })
 
 productsRouter.post('/' , validate(joiProductSchema) , productController.addProduct)
+
 productsRouter.get('/:id' , (req , res)=>{
 
 })

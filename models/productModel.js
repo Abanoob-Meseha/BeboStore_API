@@ -6,8 +6,9 @@ const joiProductSchema = Joi.object({
     name: Joi.string().min(3).max(50).required(),
     price: Joi.number().positive().precision(2).required(),
     category: Joi.string().valid('electronics', 'clothing', 'books').required(),
-    stock: Joi.number().integer().min(0).required(),
+    stock: Joi.boolean().required(),
     description: Joi.string().max(500).optional(),
+    imgUrl: Joi.string().optional()
 })
 
 const productSchema = new mongoose.Schema({
