@@ -1,8 +1,8 @@
 const express = require('express');
-const validate = require('../middlewares/validator');
-const { joiProductSchema } = require('../models/product');
+const validate = require('../middlewares/validatorMiddleware');
+const { joiProductSchema } = require('../models/productModel');
 const productsRouter = express.Router();
-const productController = require('../controllers/products.controller')
+const productController = require('../controllers/productsController')
 
 productsRouter.get('/'  ,(req , res)=>{
     res.status(200).send("Here Are our Products List")
