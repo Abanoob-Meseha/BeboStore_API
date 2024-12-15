@@ -10,6 +10,14 @@ const joiProductSchema = Joi.object({
     description: Joi.string().max(500).optional(),
     imgUrl: Joi.string().optional()
 })
+const joiUpdateProductSchema = Joi.object({
+    name: Joi.string().min(3).max(50),
+    price: Joi.number().positive().precision(2),
+    category: Joi.string().valid('electronics', 'clothing', 'books'),
+    stock: Joi.boolean(),
+    description: Joi.string().max(500),
+    imgUrl: Joi.string().optional()
+}).min(1);
 
 const productSchema = new mongoose.Schema({
     name:{
@@ -40,4 +48,4 @@ const productSchema = new mongoose.Schema({
 
 const productModel = mongoose.model('Product' , productSchema);
 
-module.exports = {productModel , joiProductSchema};
+module.exports = {productModel , joiProductSchema , joiUpdateProductSchema};
