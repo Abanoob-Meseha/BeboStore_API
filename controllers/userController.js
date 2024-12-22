@@ -1,6 +1,8 @@
 const { AppError } = require("../middlewares/errorHandlingMiddleware");
 const { userModel } = require("../models/userModel")
 const bcrypt = require('bcrypt');
+const jwt = require("jsonwebtoken");
+const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10);
 
 const register = async (req , res , next)=>{
     try {
@@ -10,7 +12,6 @@ const register = async (req , res , next)=>{
         if (userExists){
             throw new AppError(400 , "User Already Exists!!")
         }
-        const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10);
         let hashedPassword = await bcrypt.hash(password , saltRounds)
         let newUser = new userModel({
             username :username.toLowerCase(),
@@ -35,9 +36,31 @@ const register = async (req , res , next)=>{
 const login = async (req , res , next)=>{
     try {
         const {username , password} = req.body;
-        res.status(200).json({
+        const user = await userModel.findOne({username:username.toLowerCase()});
+        // check if the user have Account
+        if(!user){
+            throw new AppError(404 , `${username} doesn't Exist`)
+        }
+        // check if the password is valid
+        const validPassword = await bcrypt.compare(password , user.password);
+        if(!validPassword){
+            throw new AppError(403 , "Invalid Password!!")
+        }
+        // generate token to send to the client side
+        const payload = {id:user._id, username:user.username, role:"client"}
+        const token = jwt.sign(payload , process.env.JWT_SECRET_KEY)
+        res.status(200).cookie('token' , token ,{
+            httpOnly: true,  // Prevent access via JavaScript
+            secure: true,    // Only send over HTTPS
+            sameSite: 'Strict',  // Prevent cross-site requests
+            maxAge: 3600000  // 1 hour expiration time
+        }).json({
             status:"success",
-            message:""
+            message:`Login Successfully, Welcome ${user.firstName}`,
+            data:{
+                user:user,
+                token
+            }
         })
     } catch (error) {
         next(error)

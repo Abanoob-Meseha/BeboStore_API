@@ -6,7 +6,8 @@ const authRouter = require('./routes/authRoutes')
 const cartRouter = require('./routes/cartRoutes')
 const ordersRouter = require('./routes/ordersRoutes')
 const paymentsRouter = require('./routes/paymentsRoutes')
-const {errorHandling} = require('./middlewares/errorHandlingMiddleware') 
+const {errorHandling} = require('./middlewares/errorHandlingMiddleware'); 
+const { authenticateToken } = require('./middlewares/authMiddleware');
 
 // parsing requests in json Format
 app.use(express.json());
@@ -17,10 +18,10 @@ app.use('/cart' , cartRouter)
 app.use('/auth', authRouter)
 app.use('/payments' , paymentsRouter)
 
-app.get('/' , (req , res , next)=>{
+app.get('/' , authenticateToken ,(req , res , next)=>{
     try{
         res.status(200).json({
-            message: "Welcome To BeboStore",
+            message: `Welcome back ${req.user.username}`,
             status: 200
         })
     }catch(err){
