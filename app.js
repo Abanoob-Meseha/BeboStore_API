@@ -8,8 +8,13 @@ const ordersRouter = require('./routes/ordersRoutes')
 const paymentsRouter = require('./routes/paymentsRoutes')
 const {errorHandling} = require('./middlewares/errorHandlingMiddleware'); 
 const { authenticateToken } = require('./middlewares/authMiddleware');
+const cookieParser = require('cookie-parser');
 
-// parsing requests in json Format
+// for parsing req cookie to js object --> req.cookies
+app.use(cookieParser());
+// for parsing html forms to js object --> req.body
+app.use(express.urlencoded({extended:true}))
+// parsing requests in json Format to js object --> req.body
 app.use(express.json());
 // for Adding Routers
 app.use('/products' , productsRouter)
@@ -18,6 +23,7 @@ app.use('/cart' , cartRouter)
 app.use('/auth', authRouter)
 app.use('/payments' , paymentsRouter)
 
+// i protected this route using jwt token check auth
 app.get('/' , authenticateToken ,(req , res , next)=>{
     try{
         res.status(200).json({
