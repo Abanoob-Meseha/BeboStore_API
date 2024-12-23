@@ -24,10 +24,10 @@ app.use('/auth', authRouter)
 app.use('/payments' , paymentsRouter)
 
 // i protected this route using jwt token check auth
-app.get('/' , authenticateToken ,(req , res , next)=>{
+app.get('/'  ,(req , res , next)=>{
     try{
         res.status(200).json({
-            message: `Welcome back ${req.user.username}`,
+            message: `Welcome to BeboStore API`,
             status: 200
         })
     }catch(err){
