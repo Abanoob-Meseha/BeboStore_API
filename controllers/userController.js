@@ -58,7 +58,7 @@ const login = async (req , res , next)=>{
             status:"success",
             message:`Login Successfully, Welcome ${user.firstName}`,
             data:{
-                user:user,
+                user,
                 token
             }
         })

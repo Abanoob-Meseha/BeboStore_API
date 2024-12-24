@@ -31,8 +31,8 @@ const joiRegister_userSchema = Joi.object({
     lastName: Joi.string().required(),
     username: Joi.string().required(),
     email: Joi.string()
-        .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
-    password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9$-*^$#@!]{8,30}$')),
+        .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
+    password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9$-*^$#@!]{8,30}$')).required(),
     repeat_password: Joi.ref('password'),
 
 }).with('password' , 'repeat_password')
