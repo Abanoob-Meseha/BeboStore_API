@@ -4,7 +4,7 @@ const { Product } = require("../models");
 const addProduct = async (req, res, next) => {
   try {
     let product = new Product(req.body);
-    let productData = await Product.save();
+    let productData = await product.save();
     res.status(201).json({
       status: "success",
       message: "Product Added Successfuly !!",
