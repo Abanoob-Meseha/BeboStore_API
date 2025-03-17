@@ -1,6 +1,6 @@
-const { AppError } = require("../middlewares/errorHandlingMiddleware");
-const { userModel } = require("../models/userModel")
-const bcrypt = require('bcrypt');
+const { AppError } = require("../middlewares/errorHandling");
+const {User} = require("../models")
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10);
 
@@ -8,12 +8,12 @@ const register = async (req , res , next)=>{
     try {
         let {username , password , email , firstName , lastName} = req.body;
         // check it the user already exists
-        const userExists = await userModel.findOne({$or:[{username:username.toLowerCase()} , {email:email.toLowerCase()}]});
+        const userExists = await User.findOne({$or:[{username:username.toLowerCase()} , {email:email.toLowerCase()}]});
         if (userExists){
             throw new AppError(400 , "User Already Exists!!")
         }
         let hashedPassword = await bcrypt.hash(password , saltRounds)
-        let newUser = new userModel({
+        let newUser = new User({
             username :username.toLowerCase(),
             email: email.toLowerCase(),
             firstName,
@@ -36,7 +36,7 @@ const register = async (req , res , next)=>{
 const login = async (req , res , next)=>{
     try {
         const {username , password} = req.body;
-        const user = await userModel.findOne({username:username.toLowerCase()});
+        const user = await User.findOne({username:username.toLowerCase()});
         // check if the user have Account
         if(!user){
             throw new AppError(404 , `${username} doesn't Exist`)

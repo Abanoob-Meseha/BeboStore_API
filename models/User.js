@@ -22,7 +22,9 @@ const userSchema = new mongoose.Schema({
     password:{
         type: String,
         required: true
-    }
+    },
+    addresses:[]
+
 })
 
 // for validating at register
@@ -43,10 +45,10 @@ const joiLogin_userSchema = Joi.object({
     // password should not be less than 8 chars
     password: Joi.string().required()
 })
-const userModel = mongoose.model('User' , userSchema);
+const User = mongoose.model('User' , userSchema);
 
 module.exports = {
-    userModel , 
+    User , 
     joiLogin_userSchema,
     joiRegister_userSchema
 }

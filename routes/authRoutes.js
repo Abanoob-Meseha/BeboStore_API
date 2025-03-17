@@ -2,10 +2,10 @@ const express = require('express');
 const authRouter = express.Router();
 const userController = require("../controllers/userController");
 const adminController = require("../controllers/adminController")
-const validate = require('../middlewares/validatorMiddleware');
-const { joiRegister_userSchema, joiLogin_userSchema } = require('../models/userModel');
-const { limiter } = require('../middlewares/rateLimitMiddleware');
-const { joiAdmin_loginSchema, joiAdmin_registerSchema } = require('../models/adminModel');
+const validate = require('../middlewares/validator');
+const { joiRegister_userSchema, joiLogin_userSchema } = require('../models/User');
+const  limiter  = require('../middlewares/rateLimit');
+const { joiAdmin_loginSchema, joiAdmin_registerSchema } = require('../models/Admin');
 
 authRouter.post('/login' , limiter ,validate(joiLogin_userSchema) ,userController.login)
 

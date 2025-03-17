@@ -1,6 +1,6 @@
-const { adminModel } = require("../models/adminModel");
-const {AppError} = require("../middlewares/errorHandlingMiddleware");
-const bcrypt = require("bcrypt");
+const {Admin} = require("../models")
+const {AppError} = require("../middlewares/errorHandling");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10);
 const adminSecret = String(process.env.ADMIN_SECRET_KEY);
@@ -9,7 +9,7 @@ const adminLogin = async (req , res , next)=>{
     try {
         // check if Admin Account Found
         const {username , password} = req.body;
-        const user = await adminModel.findOne({username});
+        const user = await Admin.findOne({username});
         if(!user){
             throw new AppError(404 , "user wasn't found!!")
         }
@@ -49,26 +49,26 @@ const adminRegister = async (req , res , next)=>{
         if(adminSecretKey != adminSecret){
             throw new AppError(403 , "Wrong Key .. Not Authorized!!")
         }
-        const adminExists = await adminModel.findOne({$or:[{email:email.toLowerCase()} , {username: username.toLowerCase()}]}) 
+        const adminExists = await Admin.findOne({$or:[{email:email.toLowerCase()} , {username: username.toLowerCase()}]}) 
         if(adminExists){
             throw new AppError(400 , "Admin already Exists!!")
         }
-        // hash admin password
+        // hash Admin password
         const hashedPassword = await bcrypt.hash(password , saltRounds);
         // create and Save the new Admin
-        const newAdmin = new adminModel({
+        const newAdmin = new Admin({
             firstName,
             lastName,
             username,
             email,
             password:hashedPassword
         })
-        const admin = await newAdmin.save();
+        const Admin = await newAdmin.save();
         res.status(201).json({
             status:"success",
             message: "Admin Added Successfully",
             data:{
-                user :admin
+                user :Admin
             }
         })
     } catch (error) {

@@ -38,10 +38,10 @@ const joiAdmin_loginSchema = Joi.object({
     password : Joi.string().required()
 })
 
-const adminModel = mongoose.model("Admin" , adminSchema);
+const Admin = mongoose.model("Admin" , adminSchema);
 
 module.exports = {
-    adminModel ,
+    Admin ,
     joiAdmin_loginSchema,
     joiAdmin_registerSchema
 }

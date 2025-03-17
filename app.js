@@ -6,8 +6,7 @@ const authRouter = require('./routes/authRoutes')
 const cartRouter = require('./routes/cartRoutes')
 const ordersRouter = require('./routes/ordersRoutes')
 const paymentsRouter = require('./routes/paymentsRoutes')
-const {errorHandling} = require('./middlewares/errorHandlingMiddleware'); 
-const { authenticateToken } = require('./middlewares/authMiddleware');
+const errorHandling = require('./middlewares/errorHandling'); 
 const cookieParser = require('cookie-parser');
 
 // for parsing req cookie to js object --> req.cookies

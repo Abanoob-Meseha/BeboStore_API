@@ -1,4 +1,4 @@
-const { AppError } = require('./errorHandlingMiddleware');
+const { AppError } = require('./errorHandling');
 
 const validate = (schema)=>{
     return (req , res , next)=>{
