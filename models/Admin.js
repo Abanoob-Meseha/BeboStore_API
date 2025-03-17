@@ -21,7 +21,19 @@ const adminSchema = new mongoose.Schema({
     email:{
         required: true,
         type: String,
-    }
+    },
+    phone_number: {
+        required: true ,
+        type :String
+    },
+    messages : [
+        {
+            userID : mongoose.Schema.Types.ObjectId ,
+            user_img: String ,
+            username: String ,
+            content: String
+        }
+    ]
 })
 const joiAdmin_registerSchema = Joi.object({
     firstName: Joi.string().required(),
