@@ -4,7 +4,7 @@ const { joiProductSchema  , joiUpdateProductSchema} = require('../models/Product
 const productsRouter = express.Router();
 const productController = require('../controllers/productsController')
 
-productsRouter.get('/'  , productController.getProducts)
+productsRouter.get('/' , productController.getProducts)
 productsRouter.post('/' , validate(joiProductSchema) , productController.addProduct)
 productsRouter.get('/:id' , productController.getProductByID)
 productsRouter.put('/:id' , validate(joiUpdateProductSchema), productController.updateProduct)

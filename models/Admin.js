@@ -26,14 +26,7 @@ const adminSchema = new mongoose.Schema({
         required: true ,
         type :String
     },
-    messages : [
-        {
-            userID : mongoose.Schema.Types.ObjectId ,
-            user_img: String ,
-            username: String ,
-            content: String
-        }
-    ]
+    
 })
 const joiAdmin_registerSchema = Joi.object({
     firstName: Joi.string().required(),

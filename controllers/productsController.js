@@ -1,6 +1,6 @@
 const { AppError } = require("../middlewares/errorHandling");
 const { Product } = require("../models");
-
+// add product and return product Object
 const addProduct = async (req, res, next) => {
   try {
     let product = new Product(req.body);
@@ -17,9 +17,16 @@ const addProduct = async (req, res, next) => {
   }
 };
 
+// get all Products
 const getProducts = async (req, res, next) => {
   try {
-    let products = await Product.find();
+    // limit = how many Product / page
+    // skip = skip the Page product when select another Page
+    let {limit , page} = req.query ;
+    let skip = (page - 1) * limit ;
+    let products = await Product.find().skip(skip).limit(limit);
+    let productsCount = await Product.countDocuments();
+    let totalPages = Math.ceil(productsCount / limit);
     if (!products) {
       throw new AppError(404, "There are no Products Found ");
     }
@@ -27,13 +34,17 @@ const getProducts = async (req, res, next) => {
       status: "success",
       message: "All Products Retrieved Successfully",
       data: {
-        products: [...products],
+        page,
+        totalPages,
+        productsCount ,
+        products,
       },
     });
   } catch (error) {
     next(error);
   }
 };
+// return product found by Id
 const getProductByID = async (req, res, next) => {
   try {
     let productID = req.params.id;
@@ -52,7 +63,7 @@ const getProductByID = async (req, res, next) => {
     next(error);
   }
 };
-
+// Update Product By Id
 const updateProduct = async (req, res, next) => {
   try {
     let productID = req.params.id;
@@ -74,6 +85,7 @@ const updateProduct = async (req, res, next) => {
     next(error);
   }
 };
+// delete product by ID
 const deleteProduct = async (req, res, next) => {
   try {
     let productID = req.params.id;
