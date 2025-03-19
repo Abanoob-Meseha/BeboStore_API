@@ -2,7 +2,7 @@ const express = require("express");
 const validate = require("../middlewares/validator");
 const productsRouter = express.Router();
 const productController = require("../controllers/productsController");
-const upload = require("../config/multer");
+
 const {
   addProduct_schema,
   updateProduct_schema,
