@@ -1,9 +1,28 @@
 const { AppError } = require("../middlewares/errorHandling");
 const { Product } = require("../models");
+const { uploadToCloudinary} = require("../config/cloudinary");
+
 // add product and return product Object
 const addProduct = async (req, res, next) => {
   try {
-    let product = new Product(req.body);
+    const productExists = await Product.findOne({name: req.body.name});
+    if(!!productExists){
+      return res.status(400).json({
+        success: false ,
+        message : "Product name Already Exixts"
+      })
+    }
+    if (!req.files || req.files.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No images uploaded" });
+    }
+    // Upload each image to Cloudinary
+    const imageUploadPromises = req.files.map((file) =>
+      uploadToCloudinary(file.buffer , "Products")
+    );
+    const imageUrls = await Promise.all(imageUploadPromises);
+    let product = new Product({ ...req.body, imgs: [...imageUrls] });
     let productData = await product.save();
     res.status(201).json({
       status: "success",
@@ -22,8 +41,8 @@ const getProducts = async (req, res, next) => {
   try {
     // limit = how many Product / page
     // skip = skip the Page product when select another Page
-    let {limit , page} = req.query ;
-    let skip = (page - 1) * limit ;
+    let { limit, page } = req.query;
+    let skip = (page - 1) * limit;
     let products = await Product.find().skip(skip).limit(limit);
     let productsCount = await Product.countDocuments();
     let totalPages = Math.ceil(productsCount / limit);
@@ -36,7 +55,7 @@ const getProducts = async (req, res, next) => {
       data: {
         page,
         totalPages,
-        productsCount ,
+        productsCount,
         products,
       },
     });

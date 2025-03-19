@@ -16,10 +16,10 @@ app.use(express.urlencoded({extended:true}))
 // parsing requests in json Format to js object --> req.body
 app.use(express.json());
 // for Adding Routers
+app.use('/auth', authRouter)
 app.use('/products' , productsRouter)
 app.use('/orders' , ordersRouter)
 app.use('/cart' , cartRouter)
-app.use('/auth', authRouter)
 app.use('/payments' , paymentsRouter)
 
 // i protected this route using jwt token check auth
