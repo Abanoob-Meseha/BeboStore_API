@@ -10,21 +10,32 @@ const {
 const { isAdmin, authenticateToken } = require("../middlewares/auth");
 const multerFileBuffer = require("../middlewares/multer");
 
+// any user
 productsRouter.get("/", productController.getProducts);
+productsRouter.get("/:id", productController.getProductByID);
+
+// admin user
 productsRouter.post(
   "/",
   authenticateToken,
   isAdmin,
-  multerFileBuffer(3),
+  multerFileBuffer(5),
   validate(addProduct_schema),
   productController.addProduct
 );
-productsRouter.get("/:id", productController.getProductByID);
 productsRouter.put(
   "/:id",
+  authenticateToken,
+  isAdmin,
+  multerFileBuffer(5),
   validate(updateProduct_schema),
   productController.updateProduct
 );
-productsRouter.delete("/:id", productController.deleteProduct);
+productsRouter.delete(
+  "/:id",
+  authenticateToken,
+  isAdmin,
+  productController.deleteProduct
+);
 
 module.exports = productsRouter;

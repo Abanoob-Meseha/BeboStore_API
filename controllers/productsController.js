@@ -104,25 +104,45 @@ const deleteProduct = async (req, res, next) => {
 // Update Product By Id
 const updateProduct = async (req, res, next) => {
   try {
-    let productID = req.params.id;
-    let product = await Product.findByIdAndUpdate(productID, req.body, {
-      new: true, // Return the updated document
-      runValidators: true, // Ensure Mongoose validators are applied
-    });
+    const { id } = req.params;
+    let product = await Product.findById(id);
     if (!product) {
-      throw new AppError(404, "Product not Found");
+      return res.status(404).json({ success: false, message: "Product not found" });
     }
+    
+    // If the user uploads new images
+    let newImageUrls = [];
+    if (req.files && req.files.length > 0) {
+      if (req.files.length + product.imgs.length > 5) {
+        return res.status(400).json({ success: false, message: "A product can have a maximum of 5 images." });
+      }
+      // Upload new images to Cloudinary
+      const imageUploadPromises = req.files.map((file) =>
+        uploadToCloudinary(file.buffer, "Products")
+      );
+      newImageUrls = await Promise.all(imageUploadPromises);
+    }
+
+    // Merge existing images with new ones
+    const updatedImages = [...product.imgs, ...newImageUrls];
+
+    // Update the product
+    product = await Product.findByIdAndUpdate(
+      id,
+      { ...req.body, imgs: updatedImages },
+      { new: true, runValidators: true }
+    );
+
     res.status(200).json({
-      status: "success",
-      message: "the product Updated Successfully...Done",
-      data: {
-        product: product,
-      },
+      success: true,
+      message: "Product updated successfully",
+      data: { product },
     });
   } catch (error) {
     next(error);
   }
 };
+
 module.exports = {
   addProduct,
   getProducts,

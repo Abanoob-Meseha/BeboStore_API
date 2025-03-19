@@ -18,18 +18,21 @@ const productSchema = new mongoose.Schema(
     offer_percentage: {
       type: Number,
       required: true,
-      default: 0
+      default: 0,
     },
     stock: {
       type: Number,
       required: true,
     },
-    imgs: [
-      {
-        type: String,
-        required: true,
+    imgs: {
+      type: [String], // Array of image URLs
+      validate: {
+        validator: function (v) {
+          return v.length <= 5; // ❌ Reject if more than 5 images
+        },
+        message: "A product can have a maximum of 5 images.",
       },
-    ],
+    },
     description: {
       type: String,
       required: true,
@@ -44,7 +47,7 @@ const productSchema = new mongoose.Schema(
     ],
     comments: [
       {
-        userID: {type: mongoose.Schema.Types.ObjectId , ref: 'Comment'},
+        userID: { type: mongoose.Schema.Types.ObjectId, ref: "Comment" },
         username: String,
         user_img: String,
         content: String,
