@@ -1,6 +1,6 @@
 const { AppError } = require("../middlewares/errorHandling");
 const { Product } = require("../models");
-const { uploadToCloudinary } = require("../config/cloudinary");
+const { uploadToCloudinary, cloudinary } = require("../config/cloudinary");
 
 // add product and return product Object
 const addProduct = async (req, res, next) => {
@@ -107,14 +107,21 @@ const updateProduct = async (req, res, next) => {
     const { id } = req.params;
     let product = await Product.findById(id);
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
     }
-    
+
     // If the user uploads new images
     let newImageUrls = [];
     if (req.files && req.files.length > 0) {
       if (req.files.length + product.imgs.length > 5) {
-        return res.status(400).json({ success: false, message: "A product can have a maximum of 5 images." });
+        return res
+          .status(400)
+          .json({
+            success: false,
+            message: "A product can have a maximum of 5 images.",
+          });
       }
       // Upload new images to Cloudinary
       const imageUploadPromises = req.files.map((file) =>
@@ -143,10 +150,53 @@ const updateProduct = async (req, res, next) => {
   }
 };
 
+const deleteProductImage = async (req, res, next) => {
+  try {
+    const {productId} = req.params ;
+    const { imageUrl } = req.body;
+
+    // 1️⃣ Find the product
+    let product = await Product.findById(productId);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
+    // 2️⃣ Check if the image exists in the product
+    if (!product.imgs.includes(imageUrl)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Image not found in product" });
+    }
+
+    // 3️⃣ Extract Cloudinary public ID
+    const publicId = imageUrl.split("/").pop().split(".")[0];
+
+    // 4️⃣ Delete the image from Cloudinary
+    await cloudinary.uploader.destroy(`Products/${publicId}`);
+
+    // 5️⃣ Remove the image URL from the product's `imgs` array
+    product.imgs = product.imgs.filter((img) => img !== imageUrl);
+
+    // 6️⃣ Save the updated product
+    await product.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Image deleted successfully",
+      data: { product },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   addProduct,
   getProducts,
   updateProduct,
   getProductByID,
   deleteProduct,
+  deleteProductImage
 };

@@ -37,5 +37,11 @@ productsRouter.delete(
   isAdmin,
   productController.deleteProduct
 );
+productsRouter.delete(
+  "/:productId/delete-Img",
+  authenticateToken,
+  isAdmin,
+  productController.deleteProductImage
+);
 
 module.exports = productsRouter;
