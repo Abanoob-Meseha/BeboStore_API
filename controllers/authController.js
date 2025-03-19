@@ -18,7 +18,8 @@ const login = async (req , res , next)=>{
             // not user or Admin
             throw new AppError(400 , "Invalid Email or Password!!");
         }
-        const validPassword = await bcrypt.compare(user.password , password) ;
+        const hashedPassword = user.password;
+        const validPassword = await bcrypt.compare(password, hashedPassword);
         if(!validPassword){
             throw new AppError(400 , "Invalid Password!!")
         }
@@ -49,7 +50,9 @@ const register = async (req , res , next)=>{
         if(usernameExists){
             throw new AppError(400 , "Username Already Exists!!");
         }
-        const newUser = new User(req.body);
+        const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10) || 10;
+        const hashedPassword = await bcrypt.hash(password , saltRounds)
+        const newUser = new User({...req.body , password: hashedPassword});
         await newUser.save()
         res.status(200).json({
             success : true ,
@@ -63,7 +66,7 @@ const register = async (req , res , next)=>{
     }
 }
 
-module.export = {
+module.exports = {
     login ,
     register
 }

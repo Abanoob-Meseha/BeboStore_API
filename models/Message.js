@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const messageSchema = new mongoose.Schema(
   {
-    userID: mongoose.Schema.Types.ObjectId,
+    userID: {type: mongoose.Schema.Types.ObjectId , ref: 'User'},
     user_img: String,
     username: String,
     content: String,
@@ -12,4 +12,4 @@ const messageSchema = new mongoose.Schema(
 
 const Message = mongoose.model("Message" , messageSchema);
 
-module.export = {Message} ;
+module.export = Message ;
